@@ -126,6 +126,8 @@ export function MyPost({navigation, route}: Tnavigation) {
 
   return <EmptyPost />;
 
+  //
+
   if (isLoading)
     return (
       <View
