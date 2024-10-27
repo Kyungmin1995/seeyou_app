@@ -99,44 +99,14 @@ const My = ({navigation}: NavigationInfo) => {
                 gap: width * 4,
                 marginTop: height * 8,
               }}>
-              <View
-                style={{
-                  borderRadius: width * 4,
-                  backgroundColor: theme.colors.Primary100,
-                  paddingHorizontal: width * 5,
-                }}>
-                <Text
-                  style={{
-                    color: theme.colors.Primary700,
-                  }}>
-                  남자
-                </Text>
+              <View style={styles.profileTextCon}>
+                <Text style={styles.profileText}>남자</Text>
               </View>
-              <View
-                style={{
-                  borderRadius: width * 4,
-                  backgroundColor: theme.colors.Primary100,
-                  paddingHorizontal: width * 5,
-                }}>
-                <Text
-                  style={{
-                    color: theme.colors.Primary700,
-                  }}>
-                  한국어 상
-                </Text>
+              <View style={styles.profileTextCon}>
+                <Text style={styles.profileText}>한국어 상</Text>
               </View>
-              <View
-                style={{
-                  borderRadius: width * 4,
-                  backgroundColor: theme.colors.Primary100,
-                  paddingHorizontal: width * 5,
-                }}>
-                <Text
-                  style={{
-                    color: theme.colors.Primary700,
-                  }}>
-                  ENTP
-                </Text>
+              <View style={styles.profileTextCon}>
+                <Text style={styles.profileText}>ENTP</Text>
               </View>
             </View>
           </View>
@@ -356,6 +326,14 @@ const styles = StyleSheet.create({
     // backgroundColor: '#ddd',
     paddingHorizontal: width * 20,
     paddingVertical: height * 24,
+  },
+  profileTextCon: {
+    borderRadius: width * 4,
+    backgroundColor: theme.colors.Primary100,
+    paddingHorizontal: width * 5,
+  },
+  profileText: {
+    color: theme.colors.Primary700,
   },
   informationTop: {},
 });

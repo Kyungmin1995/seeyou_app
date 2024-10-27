@@ -45,26 +45,26 @@ export function MyPost({navigation, route}: Tnavigation) {
 
   const fetchUserServiceList = async (): Promise<UserService[]> => {
     const res = await API.post('/api/v1/userservicelist', {email});
-    return [
-      {
-        id: 1,
-        serviceTitle: '더미',
-        activityArea: ['홍대', '원당'],
-        preferredActivity: ['런닝'],
-        content: '쿼리더미데이터',
-        email: 'rudals157303@gmail.com',
-        getImage: [],
-      },
-      {
-        id: 2,
-        serviceTitle: '더미222222',
-        activityArea: ['원당'],
-        preferredActivity: ['복싱', '런닝'],
-        content: '쿼리더미데이터',
-        email: 'rudals157303@gmail.com',
-        getImage: [],
-      },
-    ];
+    // return [
+    //   {
+    //     id: 1,
+    //     serviceTitle: '더미',
+    //     activityArea: ['홍대', '원당'],
+    //     preferredActivity: ['런닝'],
+    //     content: '쿼리더미데이터',
+    //     email: 'rudals157303@gmail.com',
+    //     getImage: [],
+    //   },
+    //   {
+    //     id: 2,
+    //     serviceTitle: '더미222222',
+    //     activityArea: ['원당'],
+    //     preferredActivity: ['복싱', '런닝'],
+    //     content: '쿼리더미데이터',
+    //     email: 'rudals157303@gmail.com',
+    //     getImage: [],
+    //   },
+    // ];
     return res.data.data.userServices;
   };
   const EmptyPost = () => (
@@ -124,10 +124,6 @@ export function MyPost({navigation, route}: Tnavigation) {
     queryFn: fetchUserServiceList,
   });
 
-  return <EmptyPost />;
-
-  //
-
   if (isLoading)
     return (
       <View
@@ -142,8 +138,6 @@ export function MyPost({navigation, route}: Tnavigation) {
     );
   if (isError) return <Text>isError...</Text>;
   if (data) {
-    // console.log(data, 'data');
-
     const EmptyPost = () => (
       <>
         <View
@@ -203,7 +197,7 @@ export function MyPost({navigation, route}: Tnavigation) {
           activityArea: item.activityArea,
           preferredActivity: item.preferredActivity,
           content: item.content,
-          getImage: [],
+          getImage: item.getImage !== null || undefined ? item.getImage : [],
         },
       });
     };
