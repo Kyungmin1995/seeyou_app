@@ -1,7 +1,10 @@
-import {Text, View} from 'react-native';
-import {CalendarList, LocaleConfig} from 'react-native-calendars';
-import {width} from '../../globalDimension';
-import {useRef} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {CalendarList, LocaleConfig, Calendar} from 'react-native-calendars';
+import {height, width} from '../../globalDimension';
+import {useEffect, useRef, useState} from 'react';
+import {theme} from '../theme/theme';
+
+import ArrowIcon from '../assets/svg/Back.svg';
 
 // Locale 설정을 통해 요일을 커스터마이징
 LocaleConfig.locales['ko'] = {
@@ -49,104 +52,234 @@ LocaleConfig.locales['ko'] = {
 // 로케일을 한국어로 설정
 LocaleConfig.defaultLocale = 'ko';
 export default function Claendar() {
-  const calendarRef = useRef<any | null>(null);
-
-  const onVisibleMonthsChange = (months: any) => {
-    // 현재 보이는 달을 얻어온다
-    const currentMonth = months[0].dateString;
-
-    // 해당 달로 스크롤
-    calendarRef.current?.scrollToMonth(currentMonth);
-  };
   const dayNamesShort = LocaleConfig.locales['ko'].dayNamesShort;
-  const markedDates: any = {};
-  const today = new Date();
 
-  // 오늘 기준으로 과거와 미래 날짜 마킹
-  for (let i = 0; i < 365; i++) {
-    const date = new Date();
-    date.setDate(today.getDate() - i);
-    const formattedDate = date.toISOString().split('T')[0];
+  const dateString = new Date();
 
-    // 일요일 확인
-    if (date.getDay() === 0) {
-      // 0은 일요일
-      if (date < today) {
-        // 오늘 이전의 일요일은 핑크색
-        markedDates[formattedDate] = {
-          // selected: true,
-          disabled: true,
-          color: 'pink',
-        };
-      } else {
-        // 오늘 이후의 일요일은 빨간색
-        markedDates[formattedDate] = {selected: true, color: 'red'};
-      }
+  // Date 객체 생성
+  const date = new Date(dateString);
+
+  // 날짜 형식 변환
+  const options: any = {year: 'numeric', month: '2-digit'};
+  const formattedDate = date.toLocaleDateString('ko-KR', options);
+
+  // 출력
+  const [year, month, day] = formattedDate.split('.').map(item => item.trim());
+  const result = `${year}년 ${month}월`;
+  console.log(`${year}-${month}`, 'result');
+
+  const [currentMonth, setCurrentMonth] = useState(result);
+  const [selectedDate, setSelectedDate] = useState('2022-10-01');
+
+  const handleMonthChange = (month: {year: any; month: any}) => {
+    const monthString = `${month.year}년 ${month.month}월`;
+    console.log(month.month);
+
+    setCurrentMonth(monthString);
+  };
+
+  // const handleArrowPress = (direction: any) => {
+  //   const newDate = new Date(selectedDate);
+
+  //   if (direction === 'left') {
+  //     newDate.setMonth(newDate.getMonth() - 1); // 이전 달로 이동
+  //   } else if (direction === 'right') {
+  //     newDate.setMonth(newDate.getMonth() + 1); // 다음 달로 이동
+  //   }
+
+  //   // 선택된 날짜 상태 업데이트
+  //   setSelectedDate(newDate);
+  //   // 새 월로 변경
+  //   handleMonthChange({
+  //     year: newDate.getFullYear(),
+  //     month: newDate.getMonth() + 1,
+  //   });
+  // };
+  const handleArrowPress = (direction: any) => {
+    const currentMonthDate: any = new Date(selectedDate);
+
+    if (direction === 'left') {
+      currentMonthDate.setMonth(currentMonthDate.getMonth() - 1); // 이전 달로 변경
+    } else if (direction === 'right') {
+      currentMonthDate.setMonth(currentMonthDate.getMonth() + 1); // 다음 달로 변경
     }
-  }
+
+    const updatedDate = currentMonthDate.toISOString().split('T')[0];
+
+    setSelectedDate(updatedDate);
+  };
+
   return (
     <>
-      {/* <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          paddingVertical: 10,
-        }}>
-        {dayNamesShort.map((day: any, index: any) => (
-          <Text key={index} style={{fontSize: 16, fontWeight: 'bold'}}>
-            {day}
-          </Text>
-        ))}
-      </View> */}
-      <CalendarList
-        ref={calendarRef}
-        // onVisibleMonthsChange={onVisibleMonthsChange}
+      {/* 커스텀 월 헤더 */}
+
+      <Calendar
         onDayPress={(day: any) => {
           console.log('selected day', day);
         }}
-        hideDayNames={true}
-        pagingEnabled={true}
-        calendarStyle={{
-          paddingBottom: 0, // 추가적인 여백 제거
-        }}
-        markedDates={markedDates}
-        // markedDates={{
-        //   '2024-09-01': {marked: true},
-        //   '2024-09-02': {marked: true},
-        //   '2024-09-10': {disabled: true}, // 비활성화된 날짜 예시
-        // }}
-        theme={{
-          textMonthFontSize: 18,
-          textMonthFontWeight: 'bold',
-          textDayFontSize: width * 14, // 날짜 글꼴 크기 줄이기
-          textDayFontWeight: '700',
-          // dayTextColor: '#000', // 날짜 색상
-          // monthTextColor: '#222222', // 월 색상
-          // 날짜 텍스트 간격 조정
-          todayTextColor: '#FFFFFF',
-          todayBackgroundColor: '#1462FC', // 오늘 날짜 배경색 설정
-          textDisabledColor: '#BDBDBD',
-          selectedDayTextColor: 'red',
-        }}
-        renderHeader={date => {
-          const year = date.getFullYear();
-          const month = LocaleConfig.locales['ko'].monthNames[date.getMonth()];
-          return (
+        key={selectedDate}
+        current={selectedDate}
+        // renderArrow={(direction: any) => (
+        //   <TouchableOpacity onPress={() => handleArrowPress(direction)}>
+        //     <View
+        //       style={{
+        //         padding: 10,
+        //         transform:
+        //           direction === 'right' ? [{rotate: '180deg'}] : undefined,
+        //       }}>
+        //       <ArrowIcon />
+        //     </View>
+        //   </TouchableOpacity>
+        // )}
+        customHeader={() => (
+          <View>
             <View
               style={{
                 flexDirection: 'row',
-                justifyContent: 'center',
-                padding: 10,
+                justifyContent: 'space-between',
               }}>
-              <Text
-              //   style={styles.calendarHeaderText}
-              >
-                {year}년 {month}
-              </Text>
+              {/* prev */}
+
+              <TouchableOpacity
+                onPress={() => handleArrowPress('left')}
+                style={{paddingLeft: width * 10, justifyContent: 'center'}}>
+                <ArrowIcon />
+              </TouchableOpacity>
+              {/* header */}
+              <View style={{marginVertical: height * 16}}>
+                <Text
+                  style={{
+                    fontSize: width * 16,
+                    fontWeight: theme.fontWeigtht.bold,
+                    color: theme.colors.Gray900,
+                  }}>
+                  {currentMonth}
+                </Text>
+              </View>
+              {/* next */}
+              <TouchableOpacity
+                onPress={() => handleArrowPress('right')}
+                style={{
+                  justifyContent: 'center',
+                  transform: [{rotate: '180deg'}],
+                  paddingLeft: width * 10,
+                }}>
+                <ArrowIcon />
+              </TouchableOpacity>
             </View>
+
+            {/* 요일 */}
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                paddingVertical: 10,
+                borderTopWidth: width * 1,
+                borderBottomWidth: width * 1,
+                borderColor: theme.colors.Gray200,
+                marginBottom: height * 16,
+              }}>
+              {dayNamesShort.map((day: any, index: any) => (
+                <Text key={index} style={{fontSize: 16, fontWeight: 'bold'}}>
+                  {day}
+                </Text>
+              ))}
+            </View>
+          </View>
+        )}
+        hideDayNames
+        요일
+        헤더
+        커스텀
+        dayComponent={({date, state}: any) => {
+          const isToday = date.day === new Date().getDate();
+
+          return (
+            <>
+              <View
+                style={[
+                  isToday && {
+                    backgroundColor: theme.colors.Primary500, // 오늘 날짜 배경색
+                    borderRadius: width * 16,
+                    height: width * 20,
+                    width: width * 20,
+                  },
+                  {alignItems: 'center', justifyContent: 'center'},
+                ]}>
+                <Text
+                  style={{
+                    color:
+                      state === 'disabled'
+                        ? theme.colors.Gray400
+                        : date.day === new Date().getDate()
+                        ? theme.colors.White
+                        : theme.colors.Gray900,
+                    fontWeight: theme.fontWeigtht.bold,
+                    // borderRadius: width * 20,
+                    // width: width * 20,
+                    // height: width * 20,
+                  }}>
+                  {date.day}
+                </Text>
+              </View>
+            </>
           );
         }}
+        theme={{
+          textMonthFontSize: width * 16,
+          textMonthFontWeight: 'bold',
+          textDayFontSize: width * 14, // 날짜 글꼴 크기 줄이기
+          textDayFontWeight: '700',
+          todayTextColor: '#FFFFFF',
+          todayBackgroundColor: theme.colors.Primary500, // 오늘 날짜 배경색 설정
+          textDisabledColor: '#BDBDBD',
+        }}
+        onMonthChange={handleMonthChange}
       />
     </>
   );
 }
+const styles = StyleSheet.create({
+  monthHeader: {
+    alignItems: 'center',
+    paddingVertical: 10,
+    backgroundColor: '#f5f5f5',
+  },
+  monthHeaderText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2d4150',
+  },
+  dayNamesContainer: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderColor: '#e0e0e0',
+    paddingVertical: 5,
+  },
+  dayName: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  dayNameText: {
+    fontSize: 14,
+    color: '#2d4150',
+    fontWeight: 'bold',
+  },
+  dayContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 32,
+    height: 32,
+  },
+  dayText: {
+    fontSize: 16,
+    color: '#2d4150',
+  },
+  todayText: {
+    color: '#007aff',
+    fontWeight: 'bold',
+  },
+  disabledText: {
+    color: '#d9e1e8',
+  },
+});

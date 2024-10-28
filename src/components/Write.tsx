@@ -158,7 +158,7 @@ export function Write({navigation}: Tnavigation) {
         }}>
         <View
           style={{
-            paddingVertical: height * 32,
+            paddingTop: height * 32,
             paddingHorizontal: width * 20,
             flexDirection: 'row',
             justifyContent: 'space-between',

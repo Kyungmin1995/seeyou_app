@@ -22,6 +22,7 @@ import {Review} from '../My/Review';
 import {Tab} from '../../../App';
 import PenIcon from '../../assets/svg/Pen2.svg';
 import {ScreenNavigationProps} from '../../utils/RootParamList';
+import Claendar from '../../components/Calendar';
 
 type Tnavigation = {
   navigation: ScreenNavigationProps;
@@ -51,6 +52,7 @@ function Home({navigation}: Tnavigation) {
   return (
     <>
       <View style={{flex: 1}}>
+        <Claendar />
         <View style={{backgroundColor: '#FFF'}}>
           <View
             style={{
